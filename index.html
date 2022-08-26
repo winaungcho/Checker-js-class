@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 5.01//EN" "http://www.w3.org/TR/html5/strict.dtd">
+<html>
+
+<head>
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Checker</title>
+	<style>
+	div {
+		width: 96%;
+		margin: auto;
+		border: 3px solid #4287f5;
+	}
+	
+	#checkers {
+		width: 100%;
+	}
+	</style>
+</head>
+<body>
+	<div>
+		<h1>Checker</h1>
+		<button onclick="checker.Restart.call(checker);return false;">New</button>
+		<button onclick="checker.reverseBoard.call(checker);return false;">Reverse</button>
+		<button onclick="checker.replay.call(checker);return false;">Replay</button>
+		<br/>
+		<br/>
+		<canvas id="checkers" width="400px" height="460px"></canvas>
+	</div> <pre id="history"></pre>
+	<script src="roundedRect.js" type="text/javascript"></script>
+	<script src="checkerclass.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	</script>
+</body>
+
+</html>
