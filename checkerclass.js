@@ -72,28 +72,33 @@ class Checker {
 				if(checker != 0) {
 					if(checker % 3 == 0) checker /= 3;
 					context.fillStyle = (checker > 0) ? "cyan" : "black";
+					context.strokeStyle = "lightgray";
 					var [x_pix, y_pix] = this.screenPix(x, y);
 					if(Math.abs(checker) == 1) {
 						context.beginPath();
-						context.moveTo(x_pix + this.xsize / 2, y_pix + this.Y0 + 8);
+						//context.moveTo(x_pix + this.xsize / 2, y_pix + this.Y0 + 8);
 						context.arc(x_pix + this.xsize / 2, y_pix + this.Y0 + this.ysize / 2, 12, 0, Math.PI * 2, false);
 						context.fill();
+						context.stroke();
 					} else { 
 						context.beginPath();
-						context.moveTo(x_pix + this.xsize / 2, y_pix + 12 + this.Y0);
-						context.arc(x_pix + this.xsize / 2, y_pix + this.ysize / 2 + 4 + this.Y0, 12, 0, Math.PI * 2, false);
+						//context.moveTo(x_pix + this.xsize / 2, y_pix + 12 + this.Y0);
+						context.arc(x_pix + this.xsize / 2 - 4, y_pix + this.ysize / 2 + 4 + this.Y0, 12, 0, Math.PI * 2, false);
 						context.fill();
+						context.stroke();
 						context.beginPath();
-						context.moveTo(x_pix + this.xsize / 2, y_pix + 4 + this.Y0);
-						context.arc(x_pix + this.xsize / 2, y_pix + this.ysize / 2 - 4 + this.Y0, 12, 0, Math.PI * 2, false);
+						//context.moveTo(x_pix + this.xsize / 2, y_pix + 4 + this.Y0);
+						context.arc(x_pix + this.xsize / 2 + 4, y_pix + this.ysize / 2 - 4 + this.Y0, 12, 0, Math.PI * 2, false);
 						context.fill();
+						context.stroke();
 					}
 				}
 			}
 		}
 	}
-	DrawPendingMove() {
+	DrawMovePath() {
 		var i;
+		context.save();
 		context.fillStyle = "rgba(255, 80, 80, 0.2)";
 		for(i = 0; i < this.current_move.length; ++i) {
 			var [x_pix, y_pix] = this.screenPix(this.current_move[i][0], this.current_move[i][1]);
@@ -106,36 +111,40 @@ class Checker {
 			context.font = "14pt sans-serif";
 			context.fillText("✔️ Confirm", (this.boardx - 100) / 2 + 3, 27);
 			for(i = 1; i < this.current_move.length; ++i) {
-				// Draw move arrow
+				// Draw move direction
 				var [x_pix_start, y_pix_start] = this.screenPix(this.current_move[i - 1][0], this.current_move[i - 1][1]);
 				var [x_pix_end, y_pix_end] = this.screenPix(this.current_move[i][0], this.current_move[i][1]);
 				var x_dir = ((x_pix_end - x_pix_start) > 0) ? -10 : 10;
 				var y_dir = ((y_pix_end - y_pix_start) > 0) ? -10 : 10;
-				context.strokeStyle = "rgba(0, 0, 0, 0.5)";
+				context.strokeStyle = "rgba(125, 0, 0, 0.5)";
+				context.lineWidth = 4;
+				context.setLineDash([15, 5]);
 				context.fillStyle = "rgba(0, 0, 0, 0.5)";
 				context.beginPath();
 				context.moveTo(x_pix_start + this.xsize / 2, y_pix_start + this.ysize / 2 + this.Y0);
 				context.lineTo(x_pix_end + this.xsize / 2 + (x_dir / 2), y_pix_end + this.ysize / 2 + (y_dir / 2) + this.Y0);
 				context.stroke();
+				
 				context.beginPath();
-				context.moveTo(x_pix_end + this.xsize / 2, y_pix_end + this.ysize / 2 + this.Y0);
-				context.lineTo(x_pix_end + x_dir + this.xsize / 2, y_pix_end + this.ysize / 2 + this.Y0);
-				context.lineTo(x_pix_end + this.xsize / 2, y_pix_end + y_dir + this.ysize / 2 + this.Y0);
+				context.fillStyle = "red";
+				context.arc(x_pix_end + this.xsize / 2 + (x_dir / 2), y_pix_end + this.ysize / 2 + (y_dir / 2) + this.Y0,
+				    6, 0, Math.PI * 2, false);
 				context.fill();
 			}
 		}
+		context.restore();
 	}
-	DrawInterface() {
+	DrawClickInfo() {
 		context.font = "10pt sans-serif";
 		context.fillStyle = (this.player == 1) ? "cyan" : "black";
 		context.fillText((this.player == 1) ? "Cyan to Move" : "Black to Move", this.boardx - 100, 20);
-		// New Game Button
+		// Game ID
 		context.strokeStyle = "black"
 		roundedRect(context, 10, 10, 110, 20, 5, false);
 		context.fillStyle = "black"
 		context.fillText("Game ID:"+this.id, 15, 25);
 		if(this.current_move.length > 0) {
-			this.DrawPendingMove();
+			this.DrawMovePath();
 		}
 	}
 	CleanBoard() {
@@ -160,7 +169,7 @@ class Checker {
 			}
 		}
 		this.DrawPieces();
-		this.DrawInterface();
+		this.DrawClickInfo();
 	}
 	showHistory() {
 		var html = "";
@@ -311,7 +320,7 @@ class Checker {
 		var x_pix = (e.pageX - canvas.offsetLeft) / scaleX;
 		var y_pix = (e.pageY - canvas.offsetTop) / scaleY;
 		//alert(this.boardx + " " + x_pix+" "+y_pix);
-		if(y_pix > this.Y0 && y_pix < this.boardy) {
+		if(y_pix > this.Y0 && y_pix < this.boardy + this.Y0) {
 			if(this.num_black_pieces == 0 || this.num_cyan_pieces == 0) {
 				// game is over
 				return;
