@@ -216,13 +216,36 @@ class Checker {
 		for(var i = 0; i < this.current_move.length - 1; ++i) {
 			var start = this.current_move[i];
 			var end = this.current_move[i + 1];
-			if(Math.abs(start[0] - end[0]) == 2) { // capture
+			if(Math.abs(start[0] - end[0]) == 2 && this.G(start[0], start[1]) == this.player) { // capture
 				var mid_x = (start[0] + end[0]) / 2;
 				var mid_y = (start[1] + end[1]) / 2;
 				this.S(mid_x, mid_y, 0);
 				if(this.player == 1) this.num_black_pieces--;
 				else this.num_cyan_pieces--;
 			};
+			if(Math.abs(start[0] - end[0]) >= 2 && this.G(start[0], start[1]) == 2*this.player) { // capture
+			    var dirx = -(start[0] - end[0])/Math.abs(start[0] - end[0]);
+				var diry = -(start[1] - end[1])/Math.abs(start[1] - end[1]);
+				var jumped_x = start[0]+dirx;
+				var jumped_y = start[1]+diry;
+				var found=false;
+				var foundx, foundy;
+				while(jumped_x != end[0]){
+			
+				    if (this.G(jumped_x, jumped_y) == -3*this.player){
+				        found = true;
+				        foundx = jumped_x;
+				        foundy = jumped_y;
+				    }
+				    jumped_x = jumped_x+dirx;
+				    jumped_y = jumped_y+diry;
+				}
+				if (found){
+				    this.S(foundx, foundy, 0);
+				    if(this.player == 1) this.num_black_pieces--;
+				    else this.num_cyan_pieces--;
+				}
+			}
 			this.S(end[0], end[1], this.G(start[0], start[1]));
 			this.S(start[0], start[1], 0);
 		}
@@ -253,6 +276,7 @@ class Checker {
 			}
 		} else {
 			// Does move follow from the previous one?
+			var startplayer = this.G(this.current_move[0][0], this.current_move[0][1]);
 			var old_x = this.current_move[move_length - 1][0];
 			var old_y = this.current_move[move_length - 1][1];
 			if(x == old_x && y == old_y) { 
@@ -287,9 +311,10 @@ class Checker {
 				//alert(6);
 				return; // There's a piece in the way, this isn't the moving piece
 			}
-			if(Math.abs(old_x - x) == 2) {
+			if(Math.abs(old_x - x) == 2 && startplayer == this.player) {
 			    // Take over move
 				//alert(7);
+				//alert(this.G(old_x, old_y)+"-"+x+","+y);
 				var jumped_x = (x + old_x) / 2;
 				var jumped_y = (y + old_y) / 2;
 				if(this.G(jumped_x, jumped_y) != -this.player && this.G(jumped_x, jumped_y) != -this.player * 2) {
@@ -299,6 +324,28 @@ class Checker {
 					//alert(72);
 					this.S(jumped_x, jumped_y, this.G(jumped_x, jumped_y) * 3); // Mark as will-be-jumped
 				}
+			}
+			if(Math.abs(old_x - x) >= 2 && startplayer === 2*this.player) {
+			    
+				var dirx = -(old_x - x)/Math.abs(old_x - x);
+				var diry = -(old_y - y)/Math.abs(old_y - y);
+				var jumped_x = old_x+dirx;
+				var jumped_y = old_y+diry;
+				var found=false;
+				var foundx, foundy;
+				while(jumped_x != x){
+				    if (this.G(jumped_x, jumped_y) == -this.player && found) return;
+				    if (this.G(jumped_x, jumped_y) == this.player) return;
+				    if (this.G(jumped_x, jumped_y) == -this.player){
+				        found = true;
+				        foundx = jumped_x;
+				        foundy = jumped_y;
+				    }
+				    jumped_x = jumped_x+dirx;
+				    jumped_y = jumped_y+diry;
+				}
+				if (found)
+				this.S(foundx, foundy, this.G(foundx, foundy) * 3); // Mark as will-be-jumped
 			}
 			if(Math.abs(this.G(this.current_move[0][0], this.current_move[0][1])) == 1 && ((y - old_y) > 0) != (this.player > 0)) {
 				//alert(8);
