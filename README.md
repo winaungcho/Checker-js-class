@@ -1,6 +1,6 @@
-![Checker-js-class]checker.jpg
+![Checker-js-class](checker.jpg)
 # Checker-js-class
-Java script class for checker board game. Easy to embedded 8n HTML page.
+Java script class for checker board game. Easy to embedded in HTML page.
 
 ## Play Demo
 Visit following link and play demo checker board.
