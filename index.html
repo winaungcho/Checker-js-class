@@ -1,32 +1,104 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 5.01//EN" "http://www.w3.org/TR/html5/strict.dtd">
 <html>
 
 <head>
-	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Checker</title>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<style>
-	div {
-		width: 96%;
-		margin: auto;
+	.main-head {
+		grid-area: header;
+		text-align: center;
+		font-size: 24px;
+		background-color: teal;
+		color: lightgreen;
+		padding:4px;
+	}
+	
+	.content {
+		grid-area: content;
 		border: 3px solid #4287f5;
+	}
+	
+	.main-nav {
+		grid-area: nav;
+	}
+	
+	.side {
+		grid-area: sidebar;
+		max-height: 300px;
+		overflow-y:auto;
+	}
+	
+	.ad {
+		grid-area: ad;
+	}
+	
+	.main-footer {
+		grid-area: footer;
+		background-color: lightgray;
+		padding:4px;
+	}
+	
+	.wrapper {
+		display: grid;
+		gap: 20px;
+		grid-template-areas: "header" "nav" "content" "sidebar" "ad" "footer";
+	}
+	nav ul {
+	    margin: 0;
+	    padding: 0;
+	}
+	nav ul li {
+	    display: inline;
+	    margin: 5px;
 	}
 	
 	#checkers {
 		width: 100%;
 	}
+	@media (min-width: 500px) {
+		.wrapper {
+			grid-template-columns: 1fr 3fr;
+			grid-template-areas: "header  header" "nav     nav" "sidebar content" "ad      footer";
+		}
+		nav ul li {
+	        display: block;
+	        margin: 5px;
+	    }
+	}
+	
+	@media (min-width: 700px) {
+		.wrapper {
+			grid-template-columns: 1fr 2fr 2fr;
+			grid-template-areas: "header header  header" "nav    content sidebar" "nav    content ad" "footer footer  footer"
+		}
+		nav ul li {
+	        display: block;
+	        margin: 5px;
+	    }
+	}
 	</style>
 </head>
+
 <body>
-	<div>
-		<h1>Checker</h1>
-		<button onclick="checker.Restart.call(checker);return false;">New</button>
-		<button onclick="checker.reverseBoard.call(checker);return false;">Reverse</button>
-		<button onclick="checker.replay.call(checker);return false;">Replay</button>
-		<br/>
-		<br/>
-		<canvas id="checkers" width="400px" height="460px"></canvas>
-	</div> <pre id="history"></pre>
+	<div class="wrapper">
+		<header class="main-head">Checker</header>
+		<nav class="main-nav">
+			<ul>
+				<li><button onclick="checker.Restart.call(checker);return false;">New</button></li>
+				<li><button onclick="checker.reverseBoard.call(checker);return false;">Reverse</button></li>
+				<li><button onclick="checker.replay.call(checker);return false;">Replay</button></li>
+			</ul>
+		</nav>
+		<article class="content">
+			<div>
+			    <canvas id="checkers" width="400px" height="460px"></canvas>
+			</div>
+		</article>
+		<aside class="side"><pre id="history"></pre></aside>
+		<div class="ad"></div>
+		<footer class="main-footer">StructSoftLab</footer>
+	</div>
 	<script src="roundedRect.js" type="text/javascript"></script>
 	<script src="checkerclass.js" type="text/javascript"></script>
 	<script type="text/javascript">
